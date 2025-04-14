@@ -1,0 +1,80 @@
+{
+    "case_number": 112,
+    "case_year": 2025,
+    "report_number": 4302,
+    "rai": "39942524",
+    "requesting_unit": "38º BATALHÃO DE POLÍCIA MILITAR - 38º BPM (01º CRPM)",
+    "authority": "FERNANDO LUIZ TAKEMOTO ZIBORDI",
+    "city": "GOIÂNIA",
+    "address": "RUA 200c, qd. 67B, nº. 24, lt. 01, Em frente o bosque Botafogo, 74643-060, SETOR LESTE VILA\nNOVA, GOIÂNIA, GO",
+    "address_complement": "Em frente o bosque Botafogo",
+    "coordinates": [
+        -16.70594305,
+        -49.2284103
+    ],
+    "history": [
+        {
+            "title": "Relato PM",
+            "content": "A viatura 14769, composta pelo 1° Sargento Júlio e Soldado Moreno, foi acionada via funcional para atender uma denúncia de invasão a uma residência no setor Leste Vila Nova na rua 200c. Ao chegar no local foi identificado a residência. Segundo informações, um indivíduo havia pulado o muro e estaria no local com a intenção de cometer furto. A equipe deslocou-se até o endereço informado e conseguiu contato com a moradora, que abriu o portão autorizando a entrada dos policiais na residência. Durante a verificação, foi possível identificar que uma das portas da casa estava arrombada e vários objetos fora do lugar. O suspeito foi encontrado em um dos cômodos da residência em posse de um aparelho celular no bolso pertencente a vítima Joana e uma televisão retirada de seu lugar original, aparentemente pronta para ser subtraída. Diante das evidências e do flagrante, foi dada voz de prisão ao indivíduo por tentativa de furto. A ocorrência seguiu os procedimentos legais para encaminhamento do autor e dos itens recuperados à Delegacia competente."
+        },
+        {
+            "title": "Relato PC",
+            "content": "A Autoridade Policial após analisar os fatos, deliberou por converter o presente RAI em Auto de Prisão em Flagrantes."
+        }
+    ],
+    "linked_requests": [
+        {
+            "request_number": "581303",
+            "creation_date": "25/01/2025 07:18:10",
+            "responsible": "FERNANDO LUIZ TAKEMOTO ZIBORDI",
+            "origin_unit": "CENTRAL GERAL DE FLAGRANTES E PRONTO ATENDIMENTO AO CIDADÃO DE GOIÂNIA",
+            "affected_unit": "CENTRAL GERAL DE FLAGRANTES E PRONTO ATENDIMENTO AO CIDADÃO DE GOIÂNIA",
+            "content": "Solicita perícia de local de crime, Furto mediante Repouso Noturno e Rompimento de Obstáculo. conforme RAI n°39942524. Informo que a vítima se encontra em sua residência, sito a Rua 200c, Qd-67 B, Lt- 01, n°24, St. Vila Nova, nesta capital. Cel da vítima para contato (62) 99569-9412"
+        }
+    ],
+    "involved_team": [
+        {
+            "name": "DENISE VAZ DE ALMEIDA",
+            "role": "PERITO"
+        },
+        {
+            "name": "RAFAELLO VIRGILLI",
+            "role": "PERITO RESPONSAVEL"
+        }
+    ],
+    "traces": [
+        {
+            "type": "LOCAL",
+            "id": "788895",
+            "examinations": "LOCAL DE FURTO / LOCAL DE ROUBO / LOCAL DE DANO",
+            "status": "REALIZADO"
+        }
+    ],
+    "involved_people": [
+        {
+            "name": "ANA LUIZA TOME DOS REIS",
+            "involvement": "TESTEMUNHA",
+            "cpf": "70439623154"
+        },
+        {
+            "name": "IDEJUNIOR OLIVEIRA MORENO",
+            "involvement": "TESTEMUNHA",
+            "cpf": "3651508277"
+        },
+        {
+            "name": "JOANA D'ARC TOME DOS REIS",
+            "involvement": "VÍTIMA",
+            "cpf": "27053890163"
+        },
+        {
+            "name": "JULIO CESAR LEITE BORGES",
+            "involvement": "COMUNICANTE",
+            "cpf": "79621805104"
+        },
+        {
+            "name": "RAFAEL MENDES DE SOUSA",
+            "involvement": "AUTOR",
+            "cpf": "70115950150"
+        }
+    ]
+} 

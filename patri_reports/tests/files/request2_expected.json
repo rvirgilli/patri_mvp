@@ -1,0 +1,60 @@
+{
+    "case_number": 77,
+    "case_year": 2025,
+    "report_number": 6051,
+    "rai": "40081968",
+    "requesting_unit": "31º BATALHÃO DE POLÍCIA MILITAR - 31º BPM (01º CRPM)",
+    "authority": null,
+    "city": "GOIÂNIA",
+    "address": "RUA 3 UNIDADE 201, lt. 16, 74890-100, PARQUE ATHENEU, GOIÂNIA, GO",
+    "address_complement": null,
+    "coordinates": [
+        -16.7486389,
+        -49.20238585
+    ],
+    "history": [
+        {
+            "title": "Relato PM",
+            "content": "Em confecção"
+        }
+    ],
+    "linked_requests": [
+        {
+            "request_number": "583181",
+            "creation_date": "02/02/2025 21:26:17",
+            "responsible": "CARLOS ANDRE FERREIRA ALFAMA",
+            "origin_unit": "DIH DELEGACIA ESTADUAL DE INVESTIGAÇÃO DE HOMICÍDIOS",
+            "affected_unit": "DIH DELEGACIA ESTADUAL DE INVESTIGAÇÃO DE HOMICÍDIOS",
+            "content": "pericias de praxe para local de morte violenta pm no local 62 9 9628 9490"
+        }
+    ],
+    "involved_team": [
+        {
+            "name": "ALINE CORADO GOMES",
+            "role": "AUXILIAR"
+        },
+        {
+            "name": "DAVID BATISTA JÚNIOR",
+            "role": "FOTOGRAFO"
+        },
+        {
+            "name": "FERNANDA STEGER DE OLIVEIRA COSTA",
+            "role": "PERITO"
+        }
+    ],
+    "traces": [
+        {
+            "type": "LOCAL",
+            "id": "791718",
+            "examinations": "LOCAL DE MORTE VIOLENTA",
+            "status": "NÃO INICIADO"
+        }
+    ],
+    "involved_people": [
+        {
+            "name": "VICTOR HUGO BISPO SEVERO",
+            "involvement": "ENVOLVIDO",
+            "cpf": "5230666196"
+        }
+    ]
+} 

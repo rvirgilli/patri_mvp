@@ -1,0 +1,7 @@
+python-dotenv
+pytest
+pytest-mock
+python-telegram-bot[ext]
+pytest-asyncio
+pypdf
+requests 
