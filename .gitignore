@@ -59,4 +59,3 @@ build/
 *.egg-info/
 .cursorignore
 .env.prod
-entrypoint.sh
