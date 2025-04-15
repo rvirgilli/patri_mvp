@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-async def _safe_update_message(workflow_manager: 'WorkflowManager', user_id: int, message_id: Optional[int], text: str) -> Optional[int]:
+async def _safe_update_message(workflow_manager: 'WorkflowManager', user_id: int, message_id: Optional[int], text: str, reply_markup=None) -> Optional[int]:
     """Safely updates a message by ID or sends a new one if the message ID is invalid.
     
     Args:
@@ -17,6 +17,7 @@ async def _safe_update_message(workflow_manager: 'WorkflowManager', user_id: int
         user_id: The user to send the message to
         message_id: The message ID to edit, or None to send a new message
         text: The text to send
+        reply_markup: Optional reply markup (inline keyboard) to attach to the message
         
     Returns:
         The new message ID if a new message was sent, or the original message_id if edited successfully
@@ -30,7 +31,8 @@ async def _safe_update_message(workflow_manager: 'WorkflowManager', user_id: int
             await workflow_manager.telegram_client.edit_message_text(
                 chat_id=user_id,
                 message_id=message_id,
-                text=text
+                text=text,
+                reply_markup=reply_markup
             )
             return message_id
         except Exception as e:
@@ -39,7 +41,11 @@ async def _safe_update_message(workflow_manager: 'WorkflowManager', user_id: int
             
     # Either no message_id provided or edit failed
     try:
-        new_message = await workflow_manager.telegram_client.send_message(user_id, text)
+        new_message = await workflow_manager.telegram_client.send_message(
+            user_id, 
+            text, 
+            reply_markup=reply_markup
+        )
         if new_message:
             return new_message.message_id
     except Exception as e:

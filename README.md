@@ -1,67 +1,81 @@
-# Patri MVP
+# Patri Reports Telegram Assistant
 
-Minimal Viable Product for the Patri project.
+A modular, button-driven Telegram bot for forensic case management and evidence collection, with LLM-powered summaries and checklists.
+
+**Core Philosophy:**
+- Strictly button-driven workflow (no conversational AI or free-text commands for control)
+- Only one active case at a time; state is persisted and recoverable after restarts
+- All data (PDFs, photos, audio, metadata) is stored locally in a structured directory
+- Robust error handling and user-friendly feedback throughout the workflow
+
+## Features
+- **Deterministic, button-driven Telegram interface** for starting new cases and collecting evidence
+- **Case and state management** with persistent storage and automatic recovery
+- **Evidence collection:**
+  - Text notes
+  - Photos (with optional fingerprint tagging)
+  - Audio notes (transcribed automatically via Whisper API)
+- **LLM integration** (OpenAI & Anthropic Claude) for generating case summaries and evidence checklists from PDF data
+- **PDF processing** to extract structured information from occurrence reports
+- **Admin notifications and user access control**
+- **Local storage**: All case data and evidence files are saved on the server running the bot
+- **Clear, contextual feedback** and robust error handling for users
 
 ## Setup
+1. **Clone the repository and enter the project directory.**
+2. **Create a virtual environment and activate it:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
+3. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Create a `.env` file** in the root directory with at least:
+   ```env
+   TELEGRAM_BOT_TOKEN=your_telegram_bot_token
+   ALLOWED_TELEGRAM_USERS=123456789,987654321  # Comma-separated Telegram user IDs
+   LOG_LEVEL=INFO  # Optional, defaults to INFO
+   # For LLM integration:
+   OPENAI_API_KEY=your_openai_key
+   # Or for Anthropic Claude:
+   ANTHROPIC_API_KEY=your_anthropic_key
+   USE_ANTHROPIC=true
+   ```
 
-1.  Create a virtual environment:
-    ```bash
-    python -m venv venv
-    source venv/bin/activate
-    ```
-2.  Install dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  Create a `.env` file based on the structure in `src/patri_mvp/config.py` (or copy `.env.example` if one exists) and populate the required environment variables:
-    ```env
-    TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-    ALLOWED_TELEGRAM_USERS=user_id1,user_id2
-    LOG_LEVEL=INFO # Optional, defaults to INFO
-    ```
-
-## LLM Integration
-
-The application supports multiple LLM providers for generating case summaries and checklists:
-
-### OpenAI (Default)
-
-Set the `OPENAI_API_KEY` environment variable to use OpenAI's GPT models:
-
+## Running the Bot
+Run the Telegram bot:
 ```bash
-export OPENAI_API_KEY=your_api_key_here
+python -m patri_reports.main run
 ```
 
-### Anthropic Claude
-
-To use Anthropic's Claude models, set both the API key and enable Anthropic usage:
-
+## Testing
+Run all tests with the provided script:
 ```bash
-export ANTHROPIC_API_KEY=your_api_key_here
-export USE_ANTHROPIC=true
+python run_tests.py -v
+```
+- For coverage: `python run_tests.py -c`
+- For specific APIs: `python run_tests.py --llm` or `--whisper`
+- For Anthropic: `python run_tests.py --anthropic`
+
+Or use pytest directly:
+```bash
+pytest patri_reports/tests/
 ```
 
-The system will automatically fall back to OpenAI if Anthropic API calls fail.
+## Project Structure
+- `patri_reports/` — Main application code
+  - `main.py` — Entry point
+  - `telegram_client.py` — Telegram bot logic
+  - `workflow/` — Workflow and evidence collection logic
+  - `api/` — LLM and external API integrations
+  - `models/` — Data models
+  - `utils/` — Utilities and config
+  - `tests/` — Test suite
+- `run_tests.py` — Test runner script
+- `.env` — Environment variables (not committed)
+- `data/` — All case data and evidence files are stored here
 
-## Running Tests
-
-Run the tests using the provided test runner script:
-
-```bash
-# Run all tests
-./run_tests.py
-
-# Run with verbose output
-./run_tests.py -v
-
-# Run with coverage report
-./run_tests.py -c
-
-# Run a specific test file
-./run_tests.py -t patri_reports/tests/test_llm_api.py
-
-# Run tests with Anthropic enabled
-./run_tests.py --anthropic
-```
-
-See `patri_reports/tests/README.md` for more detailed testing instructions.
+---
+For more details, see the code, module docstrings, and `documentation.md`.

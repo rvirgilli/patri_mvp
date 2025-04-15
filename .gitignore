@@ -1,0 +1,62 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+
+# Dependency directories
+node_modules/
+
+# Environment variables
+.env
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS specific
+.DS_Store
+
+# Task files
+tasks.json
+tasks/ 
+.history/*
+.cursor/*
+data/*
+patri_reports/__pycache__/*
+patri_reports/api/__pycache__/*
+patri_reports/models/__pycache__/*
+patri_reports/utils/__pycache__/*
+patri_reports/workflows/__pycache__/*
+patri_reports/workflows/workflows/__pycache__/*
+patri_reports/workflows/workflows/workflows/__pycache__/*
+patri_reports/tests/__pycache__/*
+patri_reports/workflow/__pycache__/*
+scripts/*
+venv/*
+app_state.json
+bot_review_plan.md
+debug_state.json
+debug.txt
+Requisicao (1).pdf
+
+# Added for production
+*.py[cod]
+*$py.class
+*.so
+ENV/
+.venv
+.pytest_cache/
+dist/
+build/
+*.egg-info/
+.cursorignore
+.env.prod
+entrypoint.sh

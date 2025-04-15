@@ -4,4 +4,8 @@ pytest-mock
 python-telegram-bot[ext]
 pytest-asyncio
 pypdf
-requests 
+requests
+pydantic
+coverage
+fastapi
+uvicorn[standard]  # Use [standard] for performance improvements 

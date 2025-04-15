@@ -77,6 +77,121 @@ async def handle_waiting_for_pdf_state(workflow_manager: 'WorkflowManager', upda
                 )
                 from .workflow_idle import show_idle_menu
                 await show_idle_menu(workflow_manager, user_id)
+        elif query.data == "cancel_pdf_upload":
+            logger.info(f"User {user_id} cancelled PDF upload for existing case.")
+            # Clean up any temporary data
+            if hasattr(workflow_manager.state_manager, 'custom_data'):
+                temp_key = f"temp_pdf_{user_id}"
+                if temp_key in workflow_manager.state_manager.custom_data:
+                    del workflow_manager.state_manager.custom_data[temp_key]
+            
+            # Return to IDLE state
+            if workflow_manager.state_manager.set_state(AppState.IDLE):
+                await workflow_manager.telegram_client.edit_message_text(
+                    chat_id=user_id,
+                    message_id=query.message.message_id,
+                    text="Cancelled. Returning to main menu.",
+                    reply_markup=None
+                )
+                from .workflow_idle import show_idle_menu
+                await show_idle_menu(workflow_manager, user_id)
+        elif query.data.startswith("continue_"):
+            # Extract case ID from callback data
+            case_id = query.data.replace("continue_", "")
+            logger.info(f"User {user_id} chose to continue evidence collection for case {case_id}")
+            
+            # Update the message
+            await workflow_manager.telegram_client.edit_message_text(
+                chat_id=user_id,
+                message_id=query.message.message_id,
+                text=f"Continuing evidence collection for existing case.",
+                reply_markup=None
+            )
+            
+            # Clean up any temporary data
+            if hasattr(workflow_manager.state_manager, 'custom_data'):
+                temp_key = f"temp_pdf_{user_id}"
+                if temp_key in workflow_manager.state_manager.custom_data:
+                    del workflow_manager.state_manager.custom_data[temp_key]
+            
+            # Set state to evidence collection with the existing case ID
+            workflow_manager.state_manager.set_state(AppState.EVIDENCE_COLLECTION, active_case_id=case_id)
+            
+            # Get case info to send status
+            case_info = workflow_manager.case_manager.load_case(case_id)
+            
+            # Create/update status message
+            try:
+                from .workflow_status import create_case_status_message
+                await create_case_status_message(workflow_manager, user_id, case_id)
+            except Exception as e:
+                logger.warning(f"Failed to create/update status message: {e}")
+            
+            # Prompt for evidence collection
+            try:
+                from .workflow_evidence import send_evidence_prompt
+                await send_evidence_prompt(workflow_manager, user_id, case_id)
+            except Exception as e:
+                logger.error(f"Failed to send evidence prompt: {e}")
+                await workflow_manager.telegram_client.send_message(
+                    user_id, 
+                    "✅ Continuing with existing case. You can now send evidence."
+                )
+                
+        elif query.data.startswith("overwrite_"):
+            # Extract case ID from callback data
+            case_id = query.data.replace("overwrite_", "")
+            logger.info(f"User {user_id} chose to overwrite case {case_id}")
+            
+            # Update the message to indicate processing
+            await workflow_manager.telegram_client.edit_message_text(
+                chat_id=user_id,
+                message_id=query.message.message_id,
+                text=f"Overwriting existing case, please wait...",
+                reply_markup=None
+            )
+            
+            # Get the stored temporary data
+            temp_data = None
+            if hasattr(workflow_manager.state_manager, 'custom_data'):
+                temp_key = f"temp_pdf_{user_id}"
+                if temp_key in workflow_manager.state_manager.custom_data:
+                    temp_data = workflow_manager.state_manager.custom_data[temp_key]
+                    del workflow_manager.state_manager.custom_data[temp_key]
+            
+            if not temp_data:
+                logger.error(f"No temporary PDF data found for case {case_id}")
+                await workflow_manager.telegram_client.send_message(
+                    user_id,
+                    "❌ Error: Could not find PDF data. Please try uploading again."
+                )
+                return
+            
+            # Delete the existing case
+            try:
+                result = workflow_manager.case_manager.delete_case(case_id)
+                if not result:
+                    logger.warning(f"Failed to delete case {case_id}, but continuing with new upload")
+            except Exception as e:
+                logger.error(f"Error deleting case {case_id}: {e}")
+            
+            # Re-upload the PDF to create a new case
+            pdf_file = temp_data.get("pdf_file")
+            if pdf_file:
+                # Process the PDF again, which will create a new case
+                await workflow_manager.telegram_client.send_message(
+                    user_id,
+                    "🔄 Processing PDF to create a new case..."
+                )
+                await process_pdf_input(workflow_manager, user_id, pdf_file, query.message.message_id)
+            else:
+                logger.error("Missing PDF file in temporary data")
+                await workflow_manager.telegram_client.send_message(
+                    user_id,
+                    "❌ Error: Missing PDF data. Please try uploading again."
+                )
+                from .workflow_idle import show_idle_menu
+                await show_idle_menu(workflow_manager, user_id)
         elif query.data == "start_new_case":
             # User is trying to start a new case while already in WAITING_FOR_PDF
             # This could happen if multiple menus are displayed or state is inconsistent
@@ -261,6 +376,41 @@ async def process_pdf_input(workflow_manager: 'WorkflowManager', user_id: int, p
             display_id = f"{case_id_prefix} {case_number}/{report_number}/{case_year}"
             
             logger.info(f"Generated proper case ID: {case_id} (display: {display_id})")
+            
+            # Check if case already exists
+            existing_case = workflow_manager.case_manager.load_case(case_id)
+            if existing_case:
+                logger.info(f"Case {case_id} already exists. Asking user what to do.")
+                # Clean up temp directory, no longer needed for now
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                
+                # Store the PDF data temporarily in the state_manager's custom_data
+                if not hasattr(workflow_manager.state_manager, 'custom_data'):
+                    setattr(workflow_manager.state_manager, 'custom_data', {})
+                
+                workflow_manager.state_manager.custom_data[f"temp_pdf_{user_id}"] = {
+                    "pdf_file": pdf_file,
+                    "extracted_info": extracted_info,
+                    "case_id": case_id,
+                    "display_id": display_id
+                }
+                
+                # Present options to user
+                buttons = [
+                    [InlineKeyboardButton("Continue Evidence Collection", callback_data=f"continue_{case_id}")],
+                    [InlineKeyboardButton("Overwrite Case (Delete Current Data)", callback_data=f"overwrite_{case_id}")],
+                    [InlineKeyboardButton("Cancel", callback_data="cancel_pdf_upload")]
+                ]
+                reply_markup = InlineKeyboardMarkup(buttons)
+                
+                await _safe_update_message(
+                    workflow_manager,
+                    user_id,
+                    status_message_id,
+                    f"⚠️ A case with ID {display_id} already exists. What would you like to do?",
+                    reply_markup=reply_markup
+                )
+                return
             
             # NOW create the case with the correct ID
             case_path = workflow_manager.case_manager.create_case(case_id, pdf_file.file_name)

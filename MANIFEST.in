@@ -1,0 +1,8 @@
+include README.md
+include requirements.txt
+recursive-include patri_reports/prompts *.json *.txt
+recursive-exclude patri_reports/tests *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[cod]
+recursive-exclude * *$py.class
+recursive-exclude * *.so
