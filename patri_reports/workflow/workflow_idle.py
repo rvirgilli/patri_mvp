@@ -81,8 +81,22 @@ async def handle_idle_state(workflow_manager: 'WorkflowManager', update: Update,
         await show_idle_menu(workflow_manager, user_id)
 
     elif message:
-        # Ignore other text messages in IDLE state, maybe provide help
-        logger.debug(f"Received unexpected message from user {user_id} in IDLE state: {message.text[:50]}...")
-        await workflow_manager.telegram_client.send_message(user_id, "Use the button to start a new case, or /help.")
-        # Show the menu after a generic message
+        if message.text:
+            # Handle unexpected text messages
+            logger.debug(f"Received unexpected text message from user {user_id} in IDLE state: {message.text[:50]}...")
+            await workflow_manager.telegram_client.send_message(user_id, "Use the button to start a new case, or /help.")
+        else:
+            # Handle unexpected non-text messages (e.g., documents, photos)
+            message_type = "file/media" # Generic term
+            if message.document:
+                message_type = "document"
+            elif message.photo:
+                message_type = "photo"
+            elif message.voice:
+                message_type = "voice message"
+                
+            logger.warning(f"Received unexpected {message_type} from user {user_id} in IDLE state.")
+            await workflow_manager.telegram_client.send_message(user_id, f"❌ Please start a new case using the button below before sending a {message_type}.")
+            
+        # Show the menu after any unexpected message
         await show_idle_menu(workflow_manager, user_id) 

@@ -85,6 +85,13 @@ async def cancel_collection_workflow(workflow_manager: 'WorkflowManager', user_i
     # Update case status 
     workflow_manager.case_manager.update_llm_data(case_id, "canceled")
     
+    # Physically delete the case data
+    deleted = workflow_manager.case_manager.delete_case(case_id)
+    if deleted:
+        print_debug(f"Successfully deleted case directory for canceled case {case_id}")
+    else:
+        logger.warning(f"Failed to delete case directory for canceled case {case_id}")
+    
     # Send cancellation message
     await workflow_manager.telegram_client.send_message(
         user_id,
@@ -132,6 +139,23 @@ async def handle_evidence_collection_state(workflow_manager: 'WorkflowManager', 
         elif query.data.startswith("photo_batch_fingerprint_no_"):
             # User said these are not fingerprint photos
             batch_id = query.data.replace("photo_batch_fingerprint_no_", "")
+            from .workflow_evidence_photo import handle_photo_batch_fingerprint_response
+            await handle_photo_batch_fingerprint_response(workflow_manager, user_id, case_id, batch_id, False)
+            
+        # Handle new shortened fingerprint callback formats
+        elif query.data.startswith("fp_y_"):
+            # User confirmed these are fingerprint photos (shortened format)
+            short_batch_id = query.data.replace("fp_y_", "")
+            # Get the full batch_id from the mapping
+            batch_id = getattr(workflow_manager, 'short_to_full_batch_ids', {}).get(short_batch_id, short_batch_id)
+            from .workflow_evidence_photo import handle_photo_batch_fingerprint_response
+            await handle_photo_batch_fingerprint_response(workflow_manager, user_id, case_id, batch_id, True)
+            
+        elif query.data.startswith("fp_n_"):
+            # User said these are not fingerprint photos (shortened format)
+            short_batch_id = query.data.replace("fp_n_", "")
+            # Get the full batch_id from the mapping
+            batch_id = getattr(workflow_manager, 'short_to_full_batch_ids', {}).get(short_batch_id, short_batch_id)
             from .workflow_evidence_photo import handle_photo_batch_fingerprint_response
             await handle_photo_batch_fingerprint_response(workflow_manager, user_id, case_id, batch_id, False)
             
